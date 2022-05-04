@@ -18,6 +18,7 @@ package scale
 
 import (
 	"fmt"
+	"k8s.io/apimachinery/pkg/api/errors"
 	"strings"
 	"sync"
 
@@ -62,7 +63,7 @@ type discoveryScaleResolver struct {
 
 func (r *discoveryScaleResolver) ScaleForResource(inputRes schema.GroupVersionResource) (scaleVersion schema.GroupVersionKind, err error) {
 	groupVerResources, err := r.discoveryClient.ServerResourcesForGroupVersion(inputRes.GroupVersion().String())
-	if err != nil {
+	if errors.IsNotFound(err) {
 		return schema.GroupVersionKind{}, fmt.Errorf("unable to fetch discovery information for %s: %v", inputRes.String(), err)
 	}
 

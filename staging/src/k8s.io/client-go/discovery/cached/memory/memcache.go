@@ -24,6 +24,7 @@ import (
 
 	openapi_v2 "github.com/google/gnostic/openapiv2"
 
+	apierrors "k8s.io/apimachinery/pkg/api/errors"
 	errorsutil "k8s.io/apimachinery/pkg/api/errors"
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 	utilruntime "k8s.io/apimachinery/pkg/util/runtime"
@@ -221,7 +222,7 @@ func (d *memCacheClient) refreshLocked() error {
 
 func (d *memCacheClient) serverResourcesForGroupVersion(groupVersion string) (*metav1.APIResourceList, error) {
 	r, err := d.delegate.ServerResourcesForGroupVersion(groupVersion)
-	if err != nil {
+	if apierrors.IsNotFound(err) {
 		return r, err
 	}
 	if len(r.APIResources) == 0 {

@@ -326,12 +326,10 @@ func servedV1Versions(crd *apiextensionsv1.CustomResourceDefinition) []string {
 
 func existsInDiscoveryV1(crd *apiextensionsv1.CustomResourceDefinition, apiExtensionsClient clientset.Interface, version string) (bool, error) {
 	groupResource, err := apiExtensionsClient.Discovery().ServerResourcesForGroupVersion(crd.Spec.Group + "/" + version)
-	if err != nil {
-		if errors.IsNotFound(err) {
-			return false, nil
-		}
-		return false, err
+	if errors.IsNotFound(err) {
+		return false, nil
 	}
+	return false, err
 	for _, g := range groupResource.APIResources {
 		if g.Name == crd.Spec.Names.Plural {
 			return true, nil

@@ -19,6 +19,7 @@ package disk
 import (
 	"errors"
 	"io/ioutil"
+	apierrors "k8s.io/apimachinery/pkg/api/errors"
 	"net/http"
 	"os"
 	"path/filepath"
@@ -26,8 +27,6 @@ import (
 	"time"
 
 	openapi_v2 "github.com/google/gnostic/openapiv2"
-	"k8s.io/klog/v2"
-
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 	"k8s.io/apimachinery/pkg/runtime"
 	"k8s.io/apimachinery/pkg/version"
@@ -79,7 +78,7 @@ func (d *CachedDiscoveryClient) ServerResourcesForGroupVersion(groupVersion stri
 	}
 
 	liveResources, err := d.delegate.ServerResourcesForGroupVersion(groupVersion)
-	if err != nil {
+	if apierrors.IsNotFound(err) {
 		klog.V(3).Infof("skipped caching discovery info due to %v", err)
 		return liveResources, err
 	}

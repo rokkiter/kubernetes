@@ -352,7 +352,7 @@ func fetchGroupVersionResources(d DiscoveryInterface, apiGroups *metav1.APIGroup
 				resultLock.Lock()
 				defer resultLock.Unlock()
 
-				if err != nil {
+				if errors.IsNotFound(err) {
 					// TODO: maybe restrict this to NotFound errors
 					failedGroups[groupVersion] = err
 				}
